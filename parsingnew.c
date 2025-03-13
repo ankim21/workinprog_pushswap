@@ -6,7 +6,7 @@
 /*   By: ankim <ankim@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 11:22:40 by ankim             #+#    #+#             */
-/*   Updated: 2025/03/07 16:40:59 by ankim            ###   ########.fr       */
+/*   Updated: 2025/03/13 19:32:24 by ankim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
+
+typedef struct node {
+	int data;
+	struct node *next;
+	struct node *prev;
+} nodeptr;
 
 long long	ft_atoi(char *str)
 {
@@ -155,7 +162,48 @@ char	**ft_split(char const *s, char c)
 		i += ft_wordlen((char *)s, c, i);
 	}
 	array[j] = NULL;
-	return (array);
+	return(array);
+}
+
+size_t	ft_strlen(const char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+	{
+		i++;
+	}
+	return (i);
+}
+
+char *ft_process(int argc, char **argv)
+{
+	int y; 
+	int j;
+	char **s;
+
+	y = 1;
+	j = 0;
+	while (y < argc)
+	{
+		if (ft_strchr(argv[y], ' '))
+		{
+			s = ft_split(argv[y], ' ');
+			if (!s)
+				return (NULL);
+			j = 0;
+			while (s[j] != NULL)
+			{
+				write(1, s[j], strlen(s[j]));
+				write(1, "\n", 1);
+				j++;
+			}
+			ft_free_array(s, j);
+		}
+		y++;
+	}
+	return (NULL);
 }
 
 int	ft_check1(int argc, char **argv)
@@ -175,67 +223,146 @@ int	ft_check1(int argc, char **argv)
 			if (!((argv[y][i] >= '0' && argv[y][i] <= '9') || argv[y][i] == '+'
 					|| argv[y][i] == '-' || argv[y][i] == ' '))
 				return (-1);
-			else
-			{
-				write (1, &argv[y][i], 1);	
-				i++;
-			}
-		}
-		write(1, "\n", 1);
-		y++;
-	}
-	return (0);
-}
 
-int ft_process(int argc, char **argv)
-{
-	int y; 
-	int j;
-	char **s;
-
-	y = 1;
-	j = 0;
-	while (y < argc)
-	{
-		if (ft_strchr(argv[y], ' '))
-		{
-			s = ft_split(argv[y], ' ');
-			j = 0;
-			while (s[j] != NULL)
-			{
-				write(1, s[j], strlen(s[j]));
-				write(1, "\n", 1);
-				j++;
-			}
-			ft_free_array(s, j);
+			i++;
 		}
 		y++;
 	}
 	return (0);
 }
 
-int	ft_printme(int argc, char **argv)
+char*	ft_writeme(int argc, char **argv)
 {
-	int	i;
 	int	y;
+	int i;
 
 	y = 1;
 	i = 0;
-	if (ft_check1(argc, argv) == 0)
+	while (y < argc)
 	{
-		ft_process(argc, argv);
+		while (argv[y][i])
+		{
+			write (1, &argv[y][i], 1);
+			i++;
+		}
+		write (1, "\n", 1);
+		i = 0;
+		y++;
+	}
+	return(NULL);
+}
+
+char*	ft_printme(int argc, char **argv)
+{
+	int check_results;
+	
+	check_results = ft_check1(argc, argv);
+	if (argc == 2)
+	{
+		if (check_results == -1)
+			write(1, "ERROR\n", 6);
+		else
+			return (ft_process(argc, argv));
 	}
 	else
 	{
-		write(1, "ERROR", 6);
-		return (-1);
+		if (check_results == -1)
+			write(1, "ERROR\n", 6);
+		else if (check_results == 0)
+			return(ft_writeme(argc, argv));
+	}
+}
+
+int	ft_checkdouble(int *nums, int size)
+{
+	int i;
+	int j;
+
+	j = 0;
+	i = j + 1;
+	
+	while (j < size - 1)
+	{
+		while (i < size)
+		{
+			if (nums[j] == nums[i])
+				return (-1);
+			i++;
+		}
+		j++;
+		i = j + 1;
 	}
 	return (0);
 }
 
+nodeptr	*create_node(int x)
+{
+	nodeptr	*new;
+
+	new = (nodeptr *)malloc(sizeof(nodeptr));
+	if (!new)
+		return (NULL);
+	new->data = x;
+	new->next = new;
+	new->prev = new;
+	return (new);
+}
+
+void *append(nodeptr **head_ref, int data)
+{
+	nodeptr *new = create_node(data);
+	if (*head_ref == NULL)
+	{
+		*head_ref = new;
+		new->next = new;
+		new->prev = new;
+		return;
+	}
+	nodeptr *last = (*head_ref)->prev;
+	new->next = *head_ref;
+	new->prev = last;
+	last->next = new;
+	(*head_ref)->prev = new;
+	return;
+}
+
+void ft_display(nodeptr head)
+{
+
+}
 
 int	main(int argc, char **argv)
 {
-	ft_printme(argc, argv);
-	return (0);
+	int y;
+	int i;
+	char *results;
+	int	*num;
+	int x;
+	int final;
+
+	y = 1;
+	i = 0;
+	x = 0;
+	num = malloc(sizeof(int) * (argc - 1));
+	if (!num)
+		return (-1);
+	results = malloc(sizeof(char*) * (ft_strlen(results)));
+	if (!results)
+		return (-1);
+	if (argc < 2)
+		return (-1);
+	while (y < argc)
+	{
+		results = ft_printme(argc, argv);
+		while (results[i])
+		{
+			num[x] = ft_atoi(&results[i]);
+			x++;
+			i++;
+			free(results);
+		}
+	}
+	final = ft_checkdouble(num, argc - 1);
+	free(num);
+	return(final);
 }
