@@ -328,7 +328,23 @@ void *append(nodeptr **head_ref, int data)
 
 void ft_display(nodeptr head)
 {
+	int x;
+	nodeptr current;
 
+	x = 0;
+	if (!head)
+	{
+		printf("List is empty \n");
+		return;
+	}
+	current = head;
+	while (current != head)
+		{
+			printf("%d", current->data);
+			current = current->next;
+		}
+	printf("\n");
+	
 }
 
 int	main(int argc, char **argv)
