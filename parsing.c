@@ -5,73 +5,138 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ankim <ankim@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/28 14:37:31 by ankim             #+#    #+#             */
-/*   Updated: 2025/02/28 17:30:44 by ankim            ###   ########.fr       */
+/*   Created: 2025/03/14 13:34:13 by ankim             #+#    #+#             */
+/*   Updated: 2025/03/14 17:18:27 by ankim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "push_swap.h"
 
-char *ft_startcheck(int argc, char **argv)
+static void	ft_free_array(char **array, int i)
 {
-	int	i;
-	int y;
-
-	i = 0;
-	y = 0;
-	if (argc < 2)
-	{
-		write(1, "fucking error", 12);
-		return(1);
-	}
 	while (i > 0)
 	{
-		while (argv[i][y])
+		i--;
+		free(array[i]);
+	}
+	free(array);
+}
+
+char *ft_process(int argc, char **argv)
+{
+	int y; 
+	int j;
+	char **s;
+
+	y = 1;
+	j = 0;
+	while (y < argc)
+	{
+		if (ft_strchr(argv[y], ' '))
 		{
-			
+			s = ft_split(argv[y], ' ');
+			if (!s)
+				return (NULL);
+			j = 0;
+			while (s[j] != NULL)
+			{
+				write(1, s[j], strlen(s[j]));
+				write(1, "\n", 1);
+				j++;
+			}
+			ft_free_array(s, j);
 		}
+		y++;
 	}
+	return (NULL);
 }
 
-int	ft_checkvalid(char *str)
+int	ft_check1(int argc, char **argv)
 {
-	int	i;
+	int		i;
+	int		y;
 
 	i = 0;
-	while (str[i] == '0')
+	y = 1;
+	if (argc < 2)
+		return (-1);
+	while (y < argc)
 	{
-		i++;
+		i = 0;
+		while (argv[y][i] != '\0')
+		{
+			if (!((argv[y][i] >= '0' && argv[y][i] <= '9') || argv[y][i] == '+'
+					|| argv[y][i] == '-' || argv[y][i] == ' '))
+				return (-1);
+
+			i++;
+		}
+		y++;
 	}
-	if (ft_strlen(str[i]) >= 12)
-		return ("ERROR");
-    return(0);
+	return (0);
 }
 
-long long	ft_atoi(char *str)
+char*	ft_writeme(int argc, char **argv)
 {
-	int			i;
-	int			sign;
-	long long	res;
+	int	y;
+	int i;
 
+	y = 1;
 	i = 0;
-	sign = 1;
-	res = 0;
-	if (!str)
-		return (NULL);
-	while ((str[i] >= 9 && str[i] <= 13) || str[i] == 32)
-		i++;
-	if (str[i] == '-')
+	while (y < argc)
 	{
-		sign = -1;
-		i++;
+		while (argv[y][i])
+		{
+			write (1, &argv[y][i], 1);
+			i++;
+		}
+		write (1, "\n", 1);
+		i = 0;
+		y++;
 	}
-	else if (str[i] == '+')
-		i++;
-	while (str[i] >= '0' && str[i] <= '9')
+	return(NULL);
+}
+
+char*	ft_printme(int argc, char **argv)
+{
+	int check_results;
+	
+	check_results = ft_check1(argc, argv);
+	if (argc == 2)
 	{
-		res = res * 10 + (str[i] - '0');
-		i++;
+		if (check_results == -1)
+			write(1, "ERROR\n", 6);
+		else
+			return (ft_process(argc, argv));
 	}
-	return (res * sign);
+	else
+	{
+		if (check_results == -1)
+			write(1, "ERROR\n", 6);
+		else if (check_results == 0)
+			return(ft_writeme(argc, argv));
+	}
+	return(*argv);
+}
+
+int	ft_checkdouble(int *nums, int size)
+{
+	int i;
+	int j;
+
+	j = 0;
+	i = j + 1;
+	
+	while (j < size - 1)
+	{
+		while (i < size)
+		{
+			if (nums[j] == nums[i])
+				return (-1);
+			i++;
+		}
+		j++;
+		i = j + 1;
+	}
+	return (0);
 }
