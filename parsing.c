@@ -6,11 +6,12 @@
 /*   By: ankim <ankim@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 13:34:13 by ankim             #+#    #+#             */
-/*   Updated: 2025/03/14 17:18:27 by ankim            ###   ########.fr       */
+/*   Updated: 2025/03/18 18:13:53 by ankim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
+#include "LIBFT/libft.h"
 
 static void	ft_free_array(char **array, int i)
 {
@@ -48,7 +49,7 @@ char *ft_process(int argc, char **argv)
 		}
 		y++;
 	}
-	return (NULL);
+	return ();
 }
 
 int	ft_check1(int argc, char **argv)
@@ -59,7 +60,10 @@ int	ft_check1(int argc, char **argv)
 	i = 0;
 	y = 1;
 	if (argc < 2)
+    {
+        write (1, "ERROR", 6);
 		return (-1);
+    }
 	while (y < argc)
 	{
 		i = 0;
@@ -126,7 +130,6 @@ int	ft_checkdouble(int *nums, int size)
 
 	j = 0;
 	i = j + 1;
-	
 	while (j < size - 1)
 	{
 		while (i < size)
@@ -139,4 +142,40 @@ int	ft_checkdouble(int *nums, int size)
 		i = j + 1;
 	}
 	return (0);
+}
+
+int	main(int argc, char **argv)
+{
+	int y;
+	int x;
+    char *result;
+	int *num;
+
+	y = 1;
+	x = 0;
+	if (argc < 2)
+    {
+        write (1, "ERROR", 6);
+		return (-1);
+    }
+    num = malloc((argc - 1) * sizeof(int));
+    if (argc == 2)
+    {
+        result = ft_printme(argc, argv);
+        num [y - 1] = ft_atoi(&result[x]);
+        x++;
+    }
+    else
+    {
+        num[y - 1] = ft_atoi(argv[y]);
+        y++;
+    }
+    if (ft_checkdouble(num, argc - 1) == -1)
+    {
+        write (1, "ERROR", 6);
+        free(num);
+        return (-1);
+    }
+    free(num);
+	return(0);
 }
